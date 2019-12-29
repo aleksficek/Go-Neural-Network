@@ -39,14 +39,37 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) {
 	fmt.Print(neuralNet)
 }
 
-// TrainOnce performs a single iteration of applying weights and activating function to network
-func (n *GoNetwork) TrainOnce(data []float64) mat.Matrix {
+// TrainForwards performs a single iteration of forward propagation 
+func (n *GoNetwork) TrainForwards(data []float64) (mat.Matrix, mat.Matrix, mat.Matrix) {
 	newInputs := mat.NewDense(n.inputs, 1, data)
 	newMids := dotProduct(n.firstWeights, newInputs)
 	newMidsActivated := activateMatrix(sigmoid, newMids)
 	newOuts := dotProduct(n.secondWeights, newMidsActivated)
-	return activateMatrix(sigmoid, newOuts)
+	return newInputs, newMidsActivated, activateMatrix(sigmoid, newOuts)
 }
+
+// GetError finds the error between expected and forward propagated data
+func (n *GoNetwork) GetError(resultData []float64, resultOutputs mat.Matrix) (mat.Matrix, mat.Matrix) {
+	result := mat.NewDense(len(resultData), 1, resultData)
+	outsError := subtract(result, resultOutputs)
+	midsError := dotProduct(n.secondWeights.T(), outsError)
+	return midsError, outsError
+}
+
+// TrainBackwards performs a single iteration of backwards propagation
+func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsError, outsError mat.Matrix) {
+	
+}
+
+
+
+// TrainFull implements both forward and backward propagation
+func (n *GoNetwork) TrainFull(data, result []float64) {
+	newInputs, activatedMids, activatedOuts := n.TrainForwards(data)
+	midsError, outsError := n.GetError(result, activatedOuts)
+
+}
+
 
 func main() {
 	fmt.Print("Welcome to the golang neural network!")
@@ -58,7 +81,6 @@ func main() {
 	}
 
 	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
-	firstPrediction := myNet.TrainOnce(data)
 }
 
 // createRandomArray creates a new array of size n, full with random values
@@ -95,4 +117,36 @@ func dotProduct(matrixA, matrixB mat.Matrix) mat.Matrix {
 // sigmoid takes an input and returns the value post sigmoid calculation
 func sigmoid(x, y int, input float64) float64 {
 	return 1.0 / (1 + math.Exp(-1*input))
+}
+
+// subtract subtracts a matrix by another
+func subtract(matrixA, matrixB mat.Matrix) mat.Matrix {
+	x, y := matrixA.Dims()
+	resultMatrix := mat.NewDense(x, y, nil)
+	resultMatrix.Sub(matrixA, matrixB)
+	return resultMatrix
+}
+
+// add adds two matrices together
+func add(matrixA, matrixB mat.Matrix) mat.Matrix {
+	x, y := matrixA.Dims()
+	resultMatrix := mat.NewDense(x, y, nil)
+	resultMatrix.Add(matrixA, matrixB)
+	return resultMatrix
+}
+
+// scale multiplies a matrix by a scalar
+func scale(matrix mat.Matrix, scalar float64) mat.Matrix {
+	x, y := matrix.Dims()
+	resultMatrix := mat.NewDense(x, y, nil)
+	resultMatrix.Scale(scalar, matrix)
+	return resultMatrix
+} 
+
+// multiply multiplies two matrices together
+func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
+	x, y := matrixA.Dims()
+	resultMatrix := mat.NewDense(x, y, nil)
+	resultMatrix.MulElem(matrixA, matrixB)
+	return resultMatrix
 }
