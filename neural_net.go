@@ -124,6 +124,18 @@ func sigmoid(x, y int, input float64) float64 {
 	return 1.0 / (1 + math.Exp(-1*input))
 }
 
+// sigInverse takes the sigmoid of (1 - sigmoid)
+func sigInverse(matrix mat.Matrix) mat.Matrix {
+	j, _ := matrix.Dims()
+	array := make([]float64, j)
+	for i := range array {
+		array[i] = 1
+	}
+	inverseMatrix := mat.NewDense(j, 1, array)
+	inverseMatrix = subtract(inverseMatrix, matrix)
+	return multiply(matrix, inverseMatrix)
+}
+
 // subtract subtracts a matrix by another
 func subtract(matrixA, matrixB mat.Matrix) mat.Matrix {
 	x, y := matrixA.Dims()
