@@ -58,12 +58,19 @@ func (n *GoNetwork) GetError(resultData []float64, resultOutputs mat.Matrix) (ma
 
 // TrainBackwards performs a single iteration of backwards propagation
 func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsError, outsError mat.Matrix) {
-	// For output weights
 	// 1. Multiply outsError and sigprime of activated outs
 	// 2. Dot of this with activtedmids
 	// 3. Scale this by the learning rate
 
-	// Repeat for mids with same process except scaled down
+	multipliedMatrix := multiply(outsError, sigInverse(activatedOuts))
+	dottedMatrix := dot(multipliedMatrix, activatedMids.T())
+	scaledMatrix := scale(n.speedOfNetwork, dottedMatrix)
+	n.secondWeights = add(n.secondWeights, scaledMatrix).(*mat.Dense)
+
+	multipliedMatrix = multiply(midsError, sigInverse(activatedMids))
+	dottedMatrix = dot(multipliedMatrix, inputs.T())
+	scaledMatrix = scale(n.speedOfNetwork, dottedMatrix)
+	n.firstWeights = add(n.firstWeights, scaledMatrix).(*mat.Dense)
 }
 
 
