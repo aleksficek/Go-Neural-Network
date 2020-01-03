@@ -63,13 +63,13 @@ func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsErr
 	// 3. Scale this by the learning rate
 
 	multipliedMatrix := multiply(outsError, sigInverse(activatedOuts))
-	dottedMatrix := dot(multipliedMatrix, activatedMids.T())
-	scaledMatrix := scale(n.speedOfNetwork, dottedMatrix)
+	dottedMatrix := dotProduct(multipliedMatrix, activatedMids.T())
+	scaledMatrix := scale(dottedMatrix, n.speedOfNetwork)
 	n.secondWeights = add(n.secondWeights, scaledMatrix).(*mat.Dense)
 
 	multipliedMatrix = multiply(midsError, sigInverse(activatedMids))
-	dottedMatrix = dot(multipliedMatrix, inputs.T())
-	scaledMatrix = scale(n.speedOfNetwork, dottedMatrix)
+	dottedMatrix = dotProduct(multipliedMatrix, inputs.T())
+	scaledMatrix = scale(dottedMatrix, n.speedOfNetwork)
 	n.firstWeights = add(n.firstWeights, scaledMatrix).(*mat.Dense)
 }
 
@@ -79,7 +79,7 @@ func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsErr
 func (n *GoNetwork) TrainFull(data, result []float64) {
 	newInputs, activatedMids, activatedOuts := n.TrainForwards(data)
 	midsError, outsError := n.GetError(result, activatedOuts)
-
+	n.TrainBackwards(newInputs, activatedMids, activatedOuts, midsError, outsError)
 }
 
 
@@ -139,8 +139,8 @@ func sigInverse(matrix mat.Matrix) mat.Matrix {
 		array[i] = 1
 	}
 	inverseMatrix := mat.NewDense(j, 1, array)
-	inverseMatrix = subtract(inverseMatrix, matrix)
-	return multiply(matrix, inverseMatrix)
+	resultMatrix := subtract(inverseMatrix, matrix)
+	return multiply(matrix, resultMatrix)
 }
 
 // subtract subtracts a matrix by another
