@@ -95,6 +95,11 @@ func main() {
 	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 }
 
+// Use this funcion to upload results
+func upload() {
+
+}
+
 // createRandomArray creates a new array of size n, full with random values
 func createRandomArray(n int) []float64 {
 	fmt.Println("Creating a random array!")
