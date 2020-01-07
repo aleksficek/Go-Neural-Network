@@ -97,7 +97,8 @@ func main() {
 
 // Use this funcion to upload results
 func upload() {
-
+	mids, err := os.Create("middata.model")
+	defer mids.Close()
 }
 
 // createRandomArray creates a new array of size n, full with random values
