@@ -99,6 +99,9 @@ func main() {
 func upload() {
 	mids, err := os.Create("middata.model")
 	defer mids.Close()
+
+	outs, err := os.Create("outdata.model")
+	defer outs.Close()
 }
 
 // createRandomArray creates a new array of size n, full with random values
