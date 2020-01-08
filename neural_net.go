@@ -95,12 +95,18 @@ func main() {
 	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 }
 
-// Use this funcion to upload results
+// upload saves trained hidden layer and outputs in file
 func upload() {
 	mids, err := os.Create("middata.model")
+	if err != nill {
+		log.Fatal(err)
+	}
 	defer mids.Close()
 
 	outs, err := os.Create("outdata.model")
+	if err != nill {
+		log.Fatal(err)
+	}
 	defer outs.Close()
 }
 
