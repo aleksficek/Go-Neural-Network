@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-
+	"os"
+	"log"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -98,13 +99,13 @@ func main() {
 // upload saves trained hidden layer and outputs in file
 func upload() {
 	mids, err := os.Create("middata.model")
-	if err != nill {
+	if err != nil {
 		log.Fatal(err)
 	}
 	defer mids.Close()
 
 	outs, err := os.Create("outdata.model")
-	if err != nill {
+	if err != nil {
 		log.Fatal(err)
 	}
 	defer outs.Close()
