@@ -94,6 +94,8 @@ func main() {
 	}
 
 	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
+	fmt.Print(myNet, data)
+
 }
 
 // upload saves trained hidden layer and outputs in file
