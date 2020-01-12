@@ -37,7 +37,7 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) {
 		firstWeights:   mat.NewDense(mids, inputs, createRandomArray(mids)),
 		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs)),
 	}
-	fmt.Print(neuralNet)
+	fmt.Print("Creating neural net structure: ", neuralNet)
 }
 
 // TrainForwards performs a single iteration of forward propagation 
