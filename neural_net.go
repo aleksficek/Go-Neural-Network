@@ -27,7 +27,7 @@ type GoNetwork struct {
 }
 
 // MakeGoNetwork creates an instance of the neural network
-func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) {
+func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) *GoNetwork{
 
 	neuralNet := GoNetwork{
 		speedOfNetwork: speedOfNetwork,
@@ -38,6 +38,7 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) {
 		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs)),
 	}
 	fmt.Print("Creating neural net structure: ", neuralNet)
+	return neuralNet
 }
 
 // TrainForwards performs a single iteration of forward propagation 
@@ -86,15 +87,11 @@ func (n *GoNetwork) TrainFull(data, result []float64) {
 
 func main() {
 	fmt.Print("Welcome to the golang neural network!")
-	myNet := &GoNetwork{
-		speedOfNetwork: 13,
-		inputs:         17,
-		mids:           15,
-		outputs:        3,
-	}
-
+	myNet := MakeGoNetwork(13,17,15,3)
 	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
+	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 	fmt.Print(myNet, data)
+	myNet.TrainFull(data, resultData)
 
 }
 
