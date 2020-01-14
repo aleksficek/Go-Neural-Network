@@ -60,6 +60,7 @@ func (n *GoNetwork) GetError(resultData []float64, resultOutputs mat.Matrix) (ma
 
 // TrainBackwards performs a single iteration of backwards propagation
 func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsError, outsError mat.Matrix) {
+
 	// 1. Multiply outsError and sigprime of activated outs
 	// 2. Dot of this with activtedmids
 	// 3. Scale this by the learning rate
@@ -92,7 +93,7 @@ func main() {
 	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 	fmt.Print(myNet, data)
 	myNet.TrainFull(data, resultData)
-
+	upload()
 }
 
 // upload saves trained hidden layer and outputs in file
