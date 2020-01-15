@@ -97,10 +97,12 @@ func main() {
 }
 
 // upload saves trained hidden layer and outputs in file
-func upload() {
+func upload(n *GoNetwork) {
 	mids, err := os.Create("middata.model")
 	if err != nil {
 		log.Fatal(err)
+	} else {
+		n.firstWeights.MarshalBinaryTo(mids)
 	}
 	defer mids.Close()
 
@@ -108,7 +110,14 @@ func upload() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	else {
+		n.secondWeights.MarshalBinaryTo(outs)
+	}
 	defer outs.Close()
+}
+
+func load() {
+
 }
 
 // createRandomArray creates a new array of size n, full with random values
