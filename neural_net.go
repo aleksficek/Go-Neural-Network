@@ -116,9 +116,11 @@ func upload(n *GoNetwork) {
 	defer outs.Close()
 }
 
-func load() {
+// load sets up a neural network based on a trained data file
+func load(n *GoNetwork) {
 
 }
+
 
 // createRandomArray creates a new array of size n, full with random values
 func createRandomArray(n int) []float64 {
