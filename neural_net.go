@@ -118,6 +118,14 @@ func upload(n *GoNetwork) {
 
 // load sets up a neural network based on a trained data file
 func load(n *GoNetwork) {
+	mids, err := os.Open("middata.model")
+	if err != nil {
+		log.Fatal(err)
+	}
+	outs, err := os.Open("outdata.model")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }
 
