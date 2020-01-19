@@ -38,7 +38,7 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) *GoNetwork
 		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs)),
 	}
 	fmt.Print("Creating neural net structure: ", neuralNet)
-	return neuralNet
+	return &neuralNet
 }
 
 // TrainForwards performs a single iteration of forward propagation 
@@ -93,7 +93,7 @@ func main() {
 	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 	fmt.Print(myNet, data)
 	myNet.TrainFull(data, resultData)
-	upload()
+	upload(myNet)
 }
 
 // upload saves trained hidden layer and outputs in file
@@ -109,8 +109,7 @@ func upload(n *GoNetwork) {
 	outs, err := os.Create("outdata.model")
 	if err != nil {
 		log.Fatal(err)
-	}
-	else {
+	} else {
 		n.secondWeights.MarshalBinaryTo(outs)
 	}
 	defer outs.Close()
