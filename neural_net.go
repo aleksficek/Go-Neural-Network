@@ -94,6 +94,7 @@ func main() {
 	fmt.Print(myNet, data)
 	myNet.TrainFull(data, resultData)
 	upload(myNet)
+	load(myNet)
 }
 
 // upload saves trained hidden layer and outputs in file
@@ -102,7 +103,7 @@ func upload(n *GoNetwork) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		n.firstWeights.MarshalBinaryTo(mids)
+	n.firstWeights.MarshalBinaryTo(mids)
 	}
 	defer mids.Close()
 
@@ -127,7 +128,6 @@ func load(n *GoNetwork) {
 		log.Fatal(err)
 	}
 	defer outs.Close()
-
 }
 
 
