@@ -123,6 +123,7 @@ func load(n *GoNetwork) {
 		log.Fatal(err)
 	}
 	defer mids.Close()
+	
 	outs, err := os.Open("outdata.model")
 	if err != nil {
 		log.Fatal(err)
