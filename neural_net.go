@@ -120,14 +120,14 @@ func upload(n *GoNetwork) {
 func load(n *GoNetwork) {
 	mids, err := os.Open("middata.model")
 	if err != nil {
+		n.firstWeights.Reset()
 		log.Fatal(err)
 	}
 	defer mids.Close()
-	
+
 	outs, err := os.Open("outdata.model")
 	if err != nil {
-		log.Fatal(err)
-	}
+		n.secondWeights.Reset()
 	defer outs.Close()
 }
 
