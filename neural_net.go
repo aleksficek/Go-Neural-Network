@@ -89,7 +89,7 @@ func (n *GoNetwork) TrainFull(data, result []float64) {
 func main() {
 	fmt.Print("Welcome to the golang neural network!")
 	myNet := MakeGoNetwork(13,17,15,3)
-	data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
+	// data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
 	fmt.Print(myNet, data)
 	myNet.TrainFull(data, resultData)
@@ -128,6 +128,7 @@ func load(n *GoNetwork) {
 	outs, err := os.Open("outdata.model")
 	if err != nil {
 		n.secondWeights.Reset()
+	}
 	defer outs.Close()
 }
 
