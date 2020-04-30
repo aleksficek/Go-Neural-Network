@@ -212,3 +212,40 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 	resultMatrix.MulElem(matrixA, matrixB)
 	return resultMatrix
 }
+
+
+// start for numbers dataset
+func numberClassification(n *GoNetwork) {
+
+
+	for epochs := 0; epochs < 5; epochs++ {
+
+		fmt.Print("Currently on epoch # ", epochs)
+
+		csvFile, _  := os.Open("mnist_train.csv")
+		parse := csv.NewReader(bufio.NewReader(csvFile))
+		for {
+			record, err := r.Read()
+			if err == io.EOF {
+				break
+			}
+
+			inputs := make([]flaot64)
+			for i := range inputs {
+				x, _ := strconv.ParseFloat(record[i], 64)
+				inputs[i] = (x / 255.0 * 0.99) + 0.01
+			}
+
+			targets := make([]float64, 10)
+			for i := range targets {
+				targets[i] = 0.01
+			}
+			x, _ := strconv.Atoi(record[0])
+			targets[x] = 0.99
+
+			n.TrainFull(inputs, targets)
+		}
+		csvFile.Close()
+	}
+
+}
