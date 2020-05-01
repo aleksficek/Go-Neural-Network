@@ -1,12 +1,16 @@
-package net
+package main // This will need to change and become abstracted
 
 import (
 	"fmt"
 	"math"
 	"math/rand"
 	"os"
+	"io"
+	"strconv"
 	"log"
 	"gonum.org/v1/gonum/mat"
+	"encoding/csv"
+	"bufio"
 )
 
 // This is the start of the neural net in golang!
@@ -34,8 +38,8 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) *GoNetwork
 		inputs:         inputs,
 		mids:           mids,
 		outputs:        outputs,
-		firstWeights:   mat.NewDense(mids, inputs, createRandomArray(mids)),
-		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs)),
+		firstWeights:   mat.NewDense(mids, inputs, createRandomArray(mids*inputs)),
+		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs*mids)),
 	}
 	fmt.Print("Creating neural net structure: ", neuralNet)
 	return &neuralNet
@@ -83,18 +87,6 @@ func (n *GoNetwork) TrainFull(data, result []float64) {
 	newInputs, activatedMids, activatedOuts := n.TrainForwards(data)
 	midsError, outsError := n.GetError(result, activatedOuts)
 	n.TrainBackwards(newInputs, activatedMids, activatedOuts, midsError, outsError)
-}
-
-
-func main() {
-	fmt.Print("Welcome to the golang neural network!")
-	myNet := MakeGoNetwork(13,17,15,3)
-	// data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
-	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
-	fmt.Print(myNet, data)
-	myNet.TrainFull(data, resultData)
-	upload(myNet)
-	load(myNet)
 }
 
 // upload saves trained hidden layer and outputs in file
@@ -216,8 +208,6 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 
 // start for numbers dataset
 func numberClassification(n *GoNetwork) {
-
-
 	for epochs := 0; epochs < 5; epochs++ {
 
 		fmt.Print("Currently on epoch # ", epochs)
@@ -225,12 +215,12 @@ func numberClassification(n *GoNetwork) {
 		csvFile, _  := os.Open("mnist_train.csv")
 		parse := csv.NewReader(bufio.NewReader(csvFile))
 		for {
-			record, err := r.Read()
+			record, err := parse.Read()
 			if err == io.EOF {
 				break
 			}
 
-			inputs := make([]flaot64)
+			inputs := make([]float64, n.inputs)
 			for i := range inputs {
 				x, _ := strconv.ParseFloat(record[i], 64)
 				inputs[i] = (x / 255.0 * 0.99) + 0.01
@@ -247,5 +237,31 @@ func numberClassification(n *GoNetwork) {
 		}
 		csvFile.Close()
 	}
-
 }
+
+func main() {
+	fmt.Print("Hello humans")
+
+
+	// Create the neural net
+	numbersNet := MakeGoNetwork(784, 200, 10, 0.1)
+	print(numbersNet)
+
+	// Train the numbers
+	numberClassification(numbersNet)
+	
+}
+
+/*
+func mainOriginl() {
+	fmt.Print("Welcome to the golang neural network!")
+	myNet := MakeGoNetwork(13,17,15,3)
+	// data := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
+	resultData := [...]float64{13, 14, 15, 13, 17, 2, 4, 5, 7}
+	fmt.Print(myNet, data)
+	myNet.TrainFull(data, resultData)
+	upload(myNet)
+	load(myNet)
+}
+*/
+
