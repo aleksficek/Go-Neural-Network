@@ -11,6 +11,8 @@ import (
 	"gonum.org/v1/gonum/mat"
 	"encoding/csv"
 	"bufio"
+	"image/png"
+	"image"
 )
 
 // This is the start of the neural net in golang!
@@ -208,7 +210,7 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 
 // start for numbers dataset
 func numberClassification(n *GoNetwork) {
-	for epochs := 0; epochs < 5; epochs++ {
+	for epochs := 0; epochs < 2; epochs++ {
 
 		fmt.Print("Currently on epoch # ", epochs)
 
@@ -239,6 +241,88 @@ func numberClassification(n *GoNetwork) {
 	}
 }
 
+func numberPrediction(n *GoNetwork) {
+
+	checkFile, _ := os.Open("mnist_test.csv")
+	defer checkFile.Close()
+
+	score := 0
+	r := csv.NewReader(bufio.NewReader(checkFile))
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		inputs := make([]float64, n.inputs)
+		for i := range inputs {
+			if i == 0 {
+				inputs[i] = 1.0
+			}
+			x, _ := strconv.ParseFloat(record[i], 64)
+			inputs[i] = (x / 255.0 * 0.99) + 0.01
+		}
+		_, _, outputs := n.TrainForwards(inputs)
+		best := 0
+		highest := 0.0
+		for i := 0; i < n.outputs; i++ {
+			if outputs.At(i, 0) > highest {
+				best = i
+				highest = outputs.At(i, 0)
+			}
+		}
+		target, _ := strconv.Atoi(record[0])
+		if best == target {
+			score++
+		}
+	}
+	fmt.Print("The score we got is: ", score)
+}
+
+func dataFromImage(filePath string) (pixels []float64) {
+	
+	imgFile, err := os.Open(filePath)
+	defer imgFile.Close()
+	if err != nil {
+		fmt.Println("Cannot decode file: ", err)
+	}
+	img, err := png.Decode(imgFile)
+	if err != nil {
+		fmt.Println("Cannot decode file: ", err)
+	}
+	
+	bounds := img.Bounds()
+	gray := image.NewGray(bounds)
+
+	for x := 0; x < bounds.Max.X; x++ {
+		for y := 0; y < bounds.Max.Y; y++ {
+			var rgba = img.At(x, y)
+			gray.Set(x, y, rgba)
+		}
+	}
+
+	pixels = make([]float64, len(gray.Pix))
+
+	for i := 0; i < len(gray.Pix); i++ {
+		pixels[i] = (float64(255-gray.Pix[i]) / 255.0 * 0.99) + 0.01
+	}
+	return
+}
+
+func predictFromImage(n *GoNetwork, path string) int {
+	input := dataFromImage(path)
+	_, _, output := n.TrainForwards(input)
+	fmt.Print(output)
+	best := 0 
+	highest := 0.0
+	for i := 0; i < n.outputs; i++ {
+		if output.At(i, 0) > highest {
+			best = i
+			highest = output.At(i, 0)
+		}
+	}
+	return best
+}
+
 func main() {
 	fmt.Print("Hello humans")
 
@@ -249,6 +333,12 @@ func main() {
 
 	// Train the numbers
 	numberClassification(numbersNet)
+	upload(numbersNet)
+
+	load(numbersNet)
+	numberPrediction(numbersNet)
+
+
 	
 }
 
