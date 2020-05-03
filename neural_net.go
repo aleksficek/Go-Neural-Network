@@ -97,7 +97,7 @@ func upload(n *GoNetwork) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-	n.firstWeights.MarshalBinaryTo(mids)
+		n.firstWeights.MarshalBinaryTo(mids)
 	}
 	defer mids.Close()
 
@@ -113,15 +113,16 @@ func upload(n *GoNetwork) {
 // load sets up a neural network based on a trained data file
 func load(n *GoNetwork) {
 	mids, err := os.Open("middata.model")
-	if err != nil {
+	if err == nil {
 		n.firstWeights.Reset()
-		log.Fatal(err)
+		n.firstWeights.UnmarshalBinaryFrom(mids)
 	}
 	defer mids.Close()
 
 	outs, err := os.Open("outdata.model")
-	if err != nil {
+	if err == nil {
 		n.secondWeights.Reset()
+		n.secondWeights.UnmarshalBinaryFrom(outs)
 	}
 	defer outs.Close()
 }
@@ -210,11 +211,11 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 
 // start for numbers dataset
 func numberClassification(n *GoNetwork) {
-	for epochs := 0; epochs < 2; epochs++ {
+	for epochs := 0; epochs < 1; epochs++ {
 
 		fmt.Print("Currently on epoch # ", epochs)
 
-		csvFile, _  := os.Open("mnist_train.csv")
+		csvFile, _  := os.Open("mnist_train_short.csv")
 		parse := csv.NewReader(bufio.NewReader(csvFile))
 		for {
 			record, err := parse.Read()
@@ -243,7 +244,7 @@ func numberClassification(n *GoNetwork) {
 
 func numberPrediction(n *GoNetwork) {
 
-	checkFile, _ := os.Open("mnist_test.csv")
+	checkFile, _ := os.Open("mnist_test_short.csv")
 	defer checkFile.Close()
 
 	score := 0
@@ -323,17 +324,17 @@ func predictFromImage(n *GoNetwork, path string) int {
 	return best
 }
 
+
 func main() {
 	fmt.Print("Hello humans")
 
-
 	// Create the neural net
-	numbersNet := MakeGoNetwork(784, 200, 10, 0.1)
+	numbersNet := MakeGoNetwork(784, 200, 10, 1)
 	print(numbersNet)
 
 	// Train the numbers
-	numberClassification(numbersNet)
-	upload(numbersNet)
+	// numberClassification(numbersNet)
+	// upload(numbersNet)
 
 	load(numbersNet)
 	numberPrediction(numbersNet)
