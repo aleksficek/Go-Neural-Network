@@ -211,11 +211,11 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 
 // start for numbers dataset
 func numberClassification(n *GoNetwork) {
-	for epochs := 0; epochs < 1; epochs++ {
+	for epochs := 0; epochs < 5; epochs++ {
 
 		fmt.Print("Currently on epoch # ", epochs)
 
-		csvFile, _  := os.Open("mnist_train_short.csv")
+		csvFile, _  := os.Open("mnist_train.csv")
 		parse := csv.NewReader(bufio.NewReader(csvFile))
 		for {
 			record, err := parse.Read()
@@ -244,7 +244,7 @@ func numberClassification(n *GoNetwork) {
 
 func numberPrediction(n *GoNetwork) {
 
-	checkFile, _ := os.Open("mnist_test_short.csv")
+	checkFile, _ := os.Open("mnist_test.csv")
 	defer checkFile.Close()
 
 	score := 0
@@ -330,15 +330,16 @@ func main() {
 
 	// Create the neural net
 	numbersNet := MakeGoNetwork(784, 200, 10, 1)
-	print(numbersNet)
+	// print(numbersNet)
 
 	// Train the numbers
 	// numberClassification(numbersNet)
 	// upload(numbersNet)
 
 	load(numbersNet)
-	numberPrediction(numbersNet)
+	// numberPrediction(numbersNet)
 
+	fmt.Println("The prediction is: ", predictFromImage(numbersNet, "numbers_png/image3.png"))
 
 	
 }
