@@ -209,7 +209,10 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 }
 
 
-
+func parseData(path string) {
+	// open file
+	
+}
 
 
 
