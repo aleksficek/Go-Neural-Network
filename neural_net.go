@@ -1,4 +1,4 @@
-package main // This will need to change and become abstracted
+package gonet
 
 import (
 	"fmt"
@@ -25,9 +25,9 @@ type Node struct {
 // GoNetwork is the neural network struct
 type GoNetwork struct {
 	speedOfNetwork float64
-	inputs         int
-	mids           int
-	outputs        int
+	Inputs         int
+	Mids           int
+	Outputs        int
 	firstWeights   *mat.Dense
 	secondWeights  *mat.Dense
 }
@@ -37,19 +37,19 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) *GoNetwork
 
 	neuralNet := GoNetwork{
 		speedOfNetwork: speedOfNetwork,
-		inputs:         inputs,
-		mids:           mids,
-		outputs:        outputs,
+		Inputs:         inputs,
+		Mids:           mids,
+		Outputs:        outputs,
 		firstWeights:   mat.NewDense(mids, inputs, createRandomArray(mids*inputs)),
 		secondWeights:  mat.NewDense(outputs, mids, createRandomArray(outputs*mids)),
 	}
-	fmt.Print("Creating neural net structure: ", neuralNet)
+	fmt.Println("Creating neural net structure: ", neuralNet)
 	return &neuralNet
 }
 
 // TrainForwards performs a single iteration of forward propagation 
 func (n *GoNetwork) TrainForwards(data []float64) (mat.Matrix, mat.Matrix, mat.Matrix) {
-	newInputs := mat.NewDense(n.inputs, 1, data)
+	newInputs := mat.NewDense(n.Inputs, 1, data)
 	newMids := dotProduct(n.firstWeights, newInputs)
 	newMidsActivated := activateMatrix(sigmoid, newMids)
 	newOuts := dotProduct(n.secondWeights, newMidsActivated)
@@ -130,7 +130,6 @@ func load(n *GoNetwork) {
 
 // createRandomArray creates a new array of size n, full with random values
 func createRandomArray(n int) []float64 {
-	fmt.Println("Creating a random array!")
 	array := make([]float64, n)
 	for i := range array {
 		if i%2 == 0 {
@@ -223,7 +222,7 @@ func numberClassification(n *GoNetwork) {
 				break
 			}
 
-			inputs := make([]float64, n.inputs)
+			inputs := make([]float64, n.Inputs)
 			for i := range inputs {
 				x, _ := strconv.ParseFloat(record[i], 64)
 				inputs[i] = (x / 255.0 * 0.99) + 0.01
@@ -254,7 +253,7 @@ func numberPrediction(n *GoNetwork) {
 		if err == io.EOF {
 			break
 		}
-		inputs := make([]float64, n.inputs)
+		inputs := make([]float64, n.Inputs)
 		for i := range inputs {
 			if i == 0 {
 				inputs[i] = 1.0
@@ -265,7 +264,7 @@ func numberPrediction(n *GoNetwork) {
 		_, _, outputs := n.TrainForwards(inputs)
 		best := 0
 		highest := 0.0
-		for i := 0; i < n.outputs; i++ {
+		for i := 0; i < n.Outputs; i++ {
 			if outputs.At(i, 0) > highest {
 				best = i
 				highest = outputs.At(i, 0)
@@ -315,7 +314,7 @@ func predictFromImage(n *GoNetwork, path string) int {
 	fmt.Print(output)
 	best := 0 
 	highest := 0.0
-	for i := 0; i < n.outputs; i++ {
+	for i := 0; i < n.Outputs; i++ {
 		if output.At(i, 0) > highest {
 			best = i
 			highest = output.At(i, 0)
