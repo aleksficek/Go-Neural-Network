@@ -91,8 +91,8 @@ func (n *GoNetwork) TrainFull(data, result []float64) {
 	n.TrainBackwards(newInputs, activatedMids, activatedOuts, midsError, outsError)
 }
 
-// upload saves trained hidden layer and outputs in file
-func upload(n *GoNetwork) {
+// Upload saves trained hidden layer and outputs in file
+func Upload(n *GoNetwork) {
 	mids, err := os.Create("middata.model")
 	if err != nil {
 		log.Fatal(err)
@@ -110,8 +110,8 @@ func upload(n *GoNetwork) {
 	defer outs.Close()
 }
 
-// load sets up a neural network based on a trained data file
-func load(n *GoNetwork) {
+// Load sets up a neural network based on a trained data file
+func Load(n *GoNetwork) {
 	mids, err := os.Open("middata.model")
 	if err == nil {
 		n.firstWeights.Reset()
@@ -333,9 +333,9 @@ func main() {
 
 	// Train the numbers
 	// numberClassification(numbersNet)
-	// upload(numbersNet)
+	// Upload(numbersNet)
 
-	load(numbersNet)
+	Load(numbersNet)
 	numberPrediction(numbersNet)
 
 	// fmt.Println("The prediction is: ", predictFromImage(numbersNet, "numbers_png/image3.png"))
