@@ -47,8 +47,8 @@ func MakeGoNetwork(inputs, mids, outputs int, speedOfNetwork float64) *GoNetwork
 	return &neuralNet
 }
 
-// TrainForwards performs a single iteration of forward propagation 
-func (n *GoNetwork) TrainForwards(data []float64) (mat.Matrix, mat.Matrix, mat.Matrix) {
+// ForwardPropagate performs a single iteration of forward propagation 
+func (n *GoNetwork) ForwardPropagate(data []float64) (mat.Matrix, mat.Matrix, mat.Matrix) {
 	newInputs := mat.NewDense(n.Inputs, 1, data)
 	newMids := dotProduct(n.firstWeights, newInputs)
 	newMidsActivated := activateMatrix(sigmoid, newMids)
@@ -64,8 +64,8 @@ func (n *GoNetwork) GetError(resultData []float64, resultOutputs mat.Matrix) (ma
 	return midsError, outsError
 }
 
-// TrainBackwards performs a single iteration of backwards propagation
-func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsError, outsError mat.Matrix) {
+// BackPropagate performs a single iteration of backwards propagation
+func (n *GoNetwork) BackPropagate(inputs, activatedMids, activatedOuts, midsError, outsError mat.Matrix) {
 
 	// 1. Multiply outsError and sigprime of activated outs
 	// 2. Dot of this with activtedmids
@@ -86,9 +86,9 @@ func (n *GoNetwork) TrainBackwards(inputs, activatedMids, activatedOuts, midsErr
 
 // TrainFull implements both forward and backward propagation
 func (n *GoNetwork) TrainFull(data, result []float64) {
-	newInputs, activatedMids, activatedOuts := n.TrainForwards(data)
+	newInputs, activatedMids, activatedOuts := n.ForwardPropagate(data)
 	midsError, outsError := n.GetError(result, activatedOuts)
-	n.TrainBackwards(newInputs, activatedMids, activatedOuts, midsError, outsError)
+	n.BackPropagate(newInputs, activatedMids, activatedOuts, midsError, outsError)
 }
 
 // Upload saves trained hidden layer and outputs in file
@@ -207,6 +207,24 @@ func multiply(matrixA, matrixB mat.Matrix) mat.Matrix {
 	return resultMatrix
 }
 
+func Accuracy(numSuccess, total int) {
+	accuracy := float64(numSuccess) * 100.0 / float64(total)
+	fmt.Println("Number of Successful Guesses: ", numSuccess)
+	fmt.Println("Accuracy: %", accuracy)
+}
+
+func F1Score(truePos, falsePos, falseNeg, trueNeg float64) {
+	fmt.Println("TruePos, FalsePos, FalseNeg, TrueNeg:", truePos, falsePos, falseNeg, trueNeg)
+
+	precision := truePos / (truePos + falsePos)
+	recall := truePos / (truePos + falseNeg)
+	f1Score := 2 * (precision * recall) / (precision + recall)
+
+	fmt.Println("Precision: ", precision)
+	fmt.Println("Recall: ", recall)
+	fmt.Println("F1 Score: ", f1Score)
+}
+
 
 // start for numbers dataset
 func numberClassification(n *GoNetwork) {
@@ -261,7 +279,7 @@ func numberPrediction(n *GoNetwork) {
 			x, _ := strconv.ParseFloat(record[i], 64)
 			inputs[i] = (x / 255.0 * 0.99) + 0.01
 		}
-		_, _, outputs := n.TrainForwards(inputs)
+		_, _, outputs := n.ForwardPropagate(inputs)
 		best := 0
 		highest := 0.0
 		for i := 0; i < n.Outputs; i++ {
@@ -310,7 +328,7 @@ func dataFromImage(filePath string) (pixels []float64) {
 
 func predictFromImage(n *GoNetwork, path string) int {
 	input := dataFromImage(path)
-	_, _, output := n.TrainForwards(input)
+	_, _, output := n.ForwardPropagate(input)
 	fmt.Print(output)
 	best := 0 
 	highest := 0.0
@@ -339,6 +357,4 @@ func main() {
 	numberPrediction(numbersNet)
 
 	// fmt.Println("The prediction is: ", predictFromImage(numbersNet, "numbers_png/image3.png"))
-
-	
 }
