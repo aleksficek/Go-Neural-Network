@@ -1,20 +1,13 @@
-package main // This will need to change and become abstracted
+package main
 
 import (
 	"fmt"
-	// "math"
-	// "math/rand"
 	"os"
 	"gonet"
 	"io"
 	"strconv"
-	// "log"
-	// "gonum.org/v1/gonum/mat"
 	"encoding/csv"
 	"bufio"
-	// "image/png"
-	// "image"
-	
 )
 
 func trainCovid(n *gonet.GoNetwork, numEpochs int, path string) {
